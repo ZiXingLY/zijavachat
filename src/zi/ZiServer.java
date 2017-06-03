@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Vector;
 
 
@@ -18,6 +20,9 @@ public class ZiServer{
 	ServerSocket ss=null;
 	DatagramSocket ds=null;
 	boolean loginstatu = false;//判斷登錄狀態
+	InetAddress ip = null;
+	static int serverport = 6666;
+	static int clientport = 6667;
 	public static void main(String[] args) {
 		
 		new ZiServer().start();
@@ -36,9 +41,16 @@ public class ZiServer{
 			e.printStackTrace();
 		}
 		try {
-			ds = new DatagramSocket(6666);
+			ds = new DatagramSocket(serverport);
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			ip = InetAddress.getByName("127.0.0.1");
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			System.out.println("not found the 127.0.0.1");
 			e1.printStackTrace();
 		}
 		try{
@@ -49,11 +61,13 @@ public class ZiServer{
 				if(!loginstatu){
 					Thread loginT = new Thread(new LoginThread(s));
 					loginT.start();
+					loginstatu = true;
 					System.out.println("用戶進入登錄界面"+s.getInetAddress());	
 					//statu=true;
 					if(loginstatu){
 //						登陸成功啟動聊天線程
-						new Thread(new ChatThread(ds)).start();
+						System.out.println("启动chat线程");
+						new Thread(new ChatThread()).start();
 					}
 				}
 //				Client c = new Client(s);
@@ -72,10 +86,10 @@ public class ZiServer{
 		
 	}
 	
-	
-	public void run() {
-		
-	}
+//	
+//	public void run() {
+//		
+//	}
 //	若登錄成功設loginstatu為true
 	class LoginThread implements Runnable{
 		private Socket s;
@@ -83,6 +97,7 @@ public class ZiServer{
 		private DataOutputStream dos=null;
 		private boolean bConnected = false;
 		private Vector uservector = null;
+//		private InetAddress ip;
 		LoginThread(Socket s){
 			this.s=s;
 			try {
@@ -93,12 +108,13 @@ public class ZiServer{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		
 		}
 		public void run() {
 			DButil db = new DButil();
 			this.uservector = db.getUserList();
 			int n=uservector.size();
-			System.out.println("verser"+n);
+			System.out.println("当前注册人数："+n);
 			try {
 				dos.writeInt(n);
 				dos.flush();
@@ -122,12 +138,14 @@ public class ZiServer{
 			}
 			String statu=null;
 			try{
-				while(!loginstatu&&bConnected&&dis!=null){
+				while(bConnected&&dis!=null){
+//					!loginstatu&&
 					try {
 						statu = dis.readUTF();
 					} catch (IOException e2) {
-						System.out.println("dis errrrrrrrrrr");
-						e2.printStackTrace();
+						System.out.println("意外断开连接 无法获得按钮状态");
+//						System.out.println("dis errrrrrrrrrr");
+//						e2.printStackTrace();
 					}
 					if(statu.equals("login")){
 							
@@ -137,7 +155,7 @@ public class ZiServer{
 							if(db.Logindb(name, pass)){
 								dos.writeBoolean(true);
 								dos.flush();
-								loginstatu = true;
+//								loginstatu = true;
 							}
 							else{
 								dos.writeBoolean(false);
@@ -167,7 +185,7 @@ public class ZiServer{
 				System.out.println("Client Closed!");			
 			}
 			catch(IOException e){
-				e.printStackTrace();
+//				e.printStackTrace();
 				System.out.println("意外断开连接");
 			}catch(Exception e2){
 				
@@ -204,65 +222,81 @@ public class ZiServer{
 //				e.printStackTrace();
 //			}
 //		}
-		private DatagramSocket ds = null;
-		private DatagramPacket dp = null;
+//		private DatagramSocket ds = null;
+//		private DatagramPacket dp = null;
 		private boolean bConnected = false;
-		
-		ChatThread(DatagramSocket ds){
-			this.ds = ds;
-			
-			
-		}
+//		private InetAddress ip = null;
+//		ChatThread(DatagramSocket ds){
+//			this.ds = ds;
+////			this.ip = ip;
+//			
+//		}
 		
 		public void run(){
-			
-			
-			while(bConnected){
-				String datagram = null;
-				byte[] dataBuf = null;
-				dataBuf = new byte[512];
-				dp = new DatagramPacket(dataBuf,512);
-				try {
-					ds.receive(dp);
-					datagram = new String(dp.getData());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					System.out.println("未接收到服务端发来数据");
+			if(ds == null)
+				return;
+			while(true){
+				
+				try{
+					byte[] dataBuf = new byte[512];
+					DatagramPacket ServerPacket;
+					InetAddress remoteHost;
+					int remotePort;
+					String datagram,s;
+					ServerPacket = new DatagramPacket(dataBuf,512);
+					ds.receive(ServerPacket);
+					remoteHost = ServerPacket.getAddress();
+					remotePort = ServerPacket.getPort();
+					datagram = new String(ServerPacket.getData());
+					System.out.println("收到如下主机发来邮件"+remoteHost.getHostName()+"\n"+datagram);
+					datagram = new String(remoteHost.getHostName()+": mailServere"+InetAddress.getLocalHost().getHostName()+"has already get your mails.");
+					dataBuf = datagram.getBytes();
+					System.out.println("发送过去得到长度"+datagram.length());
+					ServerPacket = new DatagramPacket(dataBuf, dataBuf.length,remoteHost,remotePort);
+					ds.send(ServerPacket);
+				}catch(Exception e){
+					System.err.println(e);
 				}
-//				存数据库；发送给目标IP；
+				
 			}
 			
-//			try{
-//				DButil db = new DButil();
-//				while(bConnected){
-//					String str = dis.readUTF();
-////					String str = dis.readUTF();
-////					String name = str.substring(0, str.indexOf('@'));
-////					String pass = str.substring(str.indexOf('@')+1, str.length());
-////					if(db.Logindb(name, pass)){
-////						dos.writeBoolean(true);
-////					}
-////					else{
-////						dos.writeBoolean(false);
-////					}
-//				}
-//			}catch(EOFException e){
-//				System.out.println("Client Closed!");			
-//			}catch(Exception e){
-//				e.printStackTrace();
-//			}finally{
+			
+			
+//			while(bConnected){
+//				String datagram = null;
+//				byte[] dataBuf = null;
+//				dataBuf = new byte[512];
+//				dp = new DatagramPacket(dataBuf,512);
 //				try {
-//					if(dis != null) dis.close();
-//					if(s != null) s.close();
+//					ds.receive(dp);
+//					datagram = new String(dp.getData());
+//					System.out.println(datagram);
 //				} catch (IOException e1) {
 //					// TODO Auto-generated catch block
 //					e1.printStackTrace();
+//					System.out.println("未接收到服务端发来数据");
 //				}
-//				
+////				存数据库；发送给目标IP；
+//				datagram = "收到信息";
+//				dataBuf = datagram.getBytes();
+//				dp = new DatagramPacket(dataBuf, dataBuf.length,ip,clientport);
+//				try {
+//					ds.send(dp);
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//					System.out.println("向服务端发送数据失败");
+//				}
 //			}
+		}
+		protected void finalize(){
+			
+			if(ds != null){
+				ds.close();
+				ds = null;
+				System.out.println("服务已关闭");
+			}
 			
 		}
 	}
-
 }
