@@ -46,8 +46,8 @@ class mainFrame extends Frame{
 	mainFrame(){
 		try {
 			s = new Socket("127.0.0.1",8888);
-			dos = new DataOutputStream(s.getOutputStream());
 			dis = new DataInputStream(s.getInputStream());
+			dos = new DataOutputStream(s.getOutputStream());
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -84,24 +84,14 @@ class mainFrame extends Frame{
 		pl.add(friendlist, BorderLayout.CENTER);
 		this.add(pr, BorderLayout.CENTER);
 		this.add(pl, BorderLayout.WEST);
-		addWindowListener(new HandleClose());
+		
 		setSize(480,320);
 		this.setLocation(400, 300);
 		setVisible(true);
-	}
-	class HandleClose extends WindowAdapter{
-		public void windowClosing(WindowEvent e){
-			disconnect();
-			dispose();
-			System.exit(0);
-		}
+		addWindowListener(new HandleClose());
 	}
 	
 	class ButtonAction implements ActionListener{
-
-		Socket s=null;
-		DataOutputStream dos=null;
-		DataInputStream dis=null;
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			//发送事件
@@ -125,10 +115,20 @@ class mainFrame extends Frame{
 			}
 		}
 	}
+	class HandleClose extends WindowAdapter{
+		public void windowClosing(WindowEvent e){
+			disconnect();
+			dispose();
+			System.exit(0);
+		}
+	}
+	
 	void disconnect(){
 		try {
 			dos.close();
+			dis.close();
 			s.close();
+			System.out.println("已关闭");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -147,17 +147,7 @@ class loginFrame extends Frame{
 	DataInputStream dis = null;
 	loginFrame(){
 		
-		try {
-			s = new Socket("127.0.0.1",8888);
-			dos = new DataOutputStream(s.getOutputStream());
-			dis = new DataInputStream(s.getInputStream());
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
 		
 		pbut = new Panel();
 		pass = new TextField(20);
@@ -191,33 +181,84 @@ class loginFrame extends Frame{
 		this.setSize(240, 180);
 		this.setVisible(true);
 		addWindowListener(new HandleClose());
+		try {
+			s = new Socket("127.0.0.1",8888);
+			dos = new DataOutputStream(s.getOutputStream());
+			dis = new DataInputStream(s.getInputStream());
+		} catch (UnknownHostException e1) {
+			
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+			wellabel.setText("网络无连接或服务器错误请检查网络");
+			
+		}
 	}
 	class ButtonAction implements ActionListener{
 		
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			//登录事件
-			String sname=null,spass=null;
+			String sname=null,spass=null,statu=null;
+			
 			sname=name.getText();
 			spass=pass.getText();
+		
 			if(e.getSource().equals(blogin)){
-				//System.out.println(dos.toString());
+				if(sname.equals("")||spass.equals("")){
+					wellabel.setText("请输入用户名和密码！");
+				}
+				else{
+					statu="login";
+					try {
+						dos.writeUTF(statu);
+						dos.flush();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					//System.out.println(dos.toString());
+					try {
+						dos.writeUTF(sname+"@"+spass);
+						dos.flush();
+						if(dis.readBoolean()){
+							 new mainFrame();
+							 dispose();
+						}
+						else{
+							wellabel.setText("用户名或密码错误！");
+						}
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+			//注册事件
+			else{
+				statu="reg";
+				try {
+					dos.writeUTF(statu);
+					dos.flush();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				try {
 					dos.writeUTF(sname+"@"+spass);
 					dos.flush();
 					if(dis.readBoolean()){
-						 new mainFrame();
-						 dispose();
+						wellabel.setText("注册成功");
 					}else{
-						wellabel.setText("用户名或密码错误！");
+						wellabel.setText("请重试 ");
 					}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			}
-			//注册事件
-			else{
+				
 				
 			}
 		}
@@ -225,18 +266,23 @@ class loginFrame extends Frame{
 	}
 	class HandleClose extends WindowAdapter{
 		public void windowClosing(WindowEvent e){
-			disconnect();
+		//	if(dis.)
 			dispose();
+			disconnect();
 			System.exit(0);
 		}
 	}
 	void disconnect(){
 		try {
-			dos.close();
-			s.close();
+			
+			if(dos != null) dos.close();
+			if(dis != null) dis.close();
+			if(s != null ) s.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("关闭异常");
+			
 		}
 	}
 	

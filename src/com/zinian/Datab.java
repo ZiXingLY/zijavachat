@@ -15,9 +15,9 @@ public class Datab {
     // 下面语句之前就要先创建javademo数据库
     String url = "jdbc:mysql://bdm260213172.my3w.com:3306/bdm260213172_db?"
             + "user=bdm260213172&password=hang183367&useUnicode=true&characterEncoding=UTF8";
-    Statement stmt;
-	Datab() throws Exception {
-        
+    static Statement stmt;
+	//public static void main(String args[]) throws Exception {
+      Datab() throws Exception{  
         try {
             // 之所以要使用下面这条语句，是因为要使用MySQL的驱动，所以我们要把它驱动起来，
             // 可以通过Class.forName把它加载进去，也可以通过初始化来驱动起来，下面三种形式都可以
@@ -42,9 +42,16 @@ public class Datab {
 //                sql = "insert into jchatuser(userNO,userPass) values('zinian1','183367')";
 //              //  result = stmt.executeUpdate(sql);
 //                stmt.executeUpdate(sql);
-//                sql = "select * from jchatuser";
-//                ResultSet rs = stmt.executeQuery(sql);// executeQuery会返回结果的集合，否则返回空值
-//                System.out.println("usr\tpass");
+                sql = "select * from jchatuser";
+                ResultSet rs = stmt.executeQuery(sql);// executeQuery会返回结果的集合，否则返回空值
+                System.out.println("usr\tpass");
+                while (rs.next()) {
+                    System.out
+                            .println(rs.getString(1) + "\t" + rs.getString(2));// 入如果返回的是int类型可以用getInt()
+                }
+//            	String ch="\'";
+//                sql = "select * from jchatuser where userNo="+ch+"zinian"+ch;
+//                rs = stmt.executeQuery(sql);
 //                while (rs.next()) {
 //                    System.out
 //                            .println(rs.getString(1) + "\t" + rs.getString(2));// 入如果返回的是int类型可以用getInt()
@@ -55,26 +62,59 @@ public class Datab {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            conn.close();
-        }
+        } //finally {
+          //  conn.close();
+       // }
         
 
     }
-	boolean Logindb(String name,String pass){
-		sql = "select userPass form jcharuser where name="+name;
+	boolean Logindb(String name,String pass) throws SQLException{
+		String ch="\'";
+		sql = "select userPass from jchatuser where userNo="+ch+name+ch;
 		boolean flag=false;
 		try {
 			ResultSet rs = this.stmt.executeQuery(sql);
-			if(rs.next()&&rs.getString(1)==pass)
-				flag=true;
+			if(!rs.wasNull()&&rs.next()&&rs.getString(1).equals(pass) )
+			//if(rs.next())	
+			{
+					flag=true;
+				//System.out.println(rs.getString(1));
+				}
 			else
-				flag=false;
+				{
+				//System.out.println(rs.getString(1));
+				//System.out.println(pass);
+					flag=false;
+				}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+	            conn.close();
+		}
+		return flag;
+	}
+	int regdb(String name,String pass){
+		sql = "select userNo from jchatuser where userNo="+"'"+name+"'";
+		int flag=0;
+		try {
+			ResultSet rs = this.stmt.executeQuery(sql);
+			if(!rs.wasNull()&&rs.next()){
+				flag=-1;
+				System.out.println("用户已存在");
+				//用户已存在
+				
+			}else{
+				sql =  "insert into jchatuser(userNO,userPass) values('" +name+ "','" +pass+ "')";
+				int result = stmt.executeUpdate(sql);
+				flag=1;
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return flag;
+		
 	}
 
 //	public static void main(String[] args) {
