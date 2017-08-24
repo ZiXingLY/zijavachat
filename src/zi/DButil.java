@@ -13,37 +13,37 @@ public class DButil {
 
 	static Connection conn = null;
 	static String sql;
-	static // MySQLµÄJDBC URL±àĞ´·½Ê½£ºjdbc:mysql://Ö÷»úÃû³Æ£ºÁ¬½Ó¶Ë¿Ú/Êı¾İ¿âµÄÃû³Æ?²ÎÊı=Öµ
-			// ±ÜÃâÖĞÎÄÂÒÂëÒªÖ¸¶¨useUnicodeºÍcharacterEncoding
-			// Ö´ĞĞÊı¾İ¿â²Ù×÷Ö®Ç°ÒªÔÚÊı¾İ¿â¹ÜÀíÏµÍ³ÉÏ´´½¨Ò»¸öÊı¾İ¿â£¬Ãû×Ö×Ô¼º¶¨£¬
-			// ÏÂÃæÓï¾äÖ®Ç°¾ÍÒªÏÈ´´½¨javademoÊı¾İ¿â
+	static // MySQLçš„JDBC URLç¼–å†™æ–¹å¼ï¼šjdbc:mysql://ä¸»æœºåç§°ï¼šè¿æ¥ç«¯å£/æ•°æ®åº“çš„åç§°?å‚æ•°=å€¼
+			// é¿å…ä¸­æ–‡ä¹±ç è¦æŒ‡å®šuseUnicodeå’ŒcharacterEncoding
+			// æ‰§è¡Œæ•°æ®åº“æ“ä½œä¹‹å‰è¦åœ¨æ•°æ®åº“ç®¡ç†ç³»ç»Ÿä¸Šåˆ›å»ºä¸€ä¸ªæ•°æ®åº“ï¼Œåå­—è‡ªå·±å®šï¼Œ
+			// ä¸‹é¢è¯­å¥ä¹‹å‰å°±è¦å…ˆåˆ›å»ºjavademoæ•°æ®åº“
 	String url = "jdbc:mysql://bdm260213172.my3w.com:3306/bdm260213172_db?"
-			+ "user=bdm260213172&password=hang183367&useUnicode=true&characterEncoding=UTF8";
+			+ "user=bdm260213172&password=********&useUnicode=true&characterEncoding=UTF8";
 	static Statement stmt;
 
 	// public static void main(String args[]) throws Exception {
 	DButil() {
 		// throws Exception{
 		try {
-			// Ö®ËùÒÔÒªÊ¹ÓÃÏÂÃæÕâÌõÓï¾ä£¬ÊÇÒòÎªÒªÊ¹ÓÃMySQLµÄÇı¶¯£¬ËùÒÔÎÒÃÇÒª°ÑËüÇı¶¯ÆğÀ´£¬
-			// ¿ÉÒÔÍ¨¹ıClass.forName°ÑËü¼ÓÔØ½øÈ¥£¬Ò²¿ÉÒÔÍ¨¹ı³õÊ¼»¯À´Çı¶¯ÆğÀ´£¬ÏÂÃæÈıÖÖĞÎÊ½¶¼¿ÉÒÔ
-			Class.forName("com.mysql.jdbc.Driver");// ¶¯Ì¬¼ÓÔØmysqlÇı¶¯
+			// ä¹‹æ‰€ä»¥è¦ä½¿ç”¨ä¸‹é¢è¿™æ¡è¯­å¥ï¼Œæ˜¯å› ä¸ºè¦ä½¿ç”¨MySQLçš„é©±åŠ¨ï¼Œæ‰€ä»¥æˆ‘ä»¬è¦æŠŠå®ƒé©±åŠ¨èµ·æ¥ï¼Œ
+			// å¯ä»¥é€šè¿‡Class.forNameæŠŠå®ƒåŠ è½½è¿›å»ï¼Œä¹Ÿå¯ä»¥é€šè¿‡åˆå§‹åŒ–æ¥é©±åŠ¨èµ·æ¥ï¼Œä¸‹é¢ä¸‰ç§å½¢å¼éƒ½å¯ä»¥
+			Class.forName("com.mysql.jdbc.Driver");// åŠ¨æ€åŠ è½½mysqlé©±åŠ¨
 			// or:
 			// com.mysql.jdbc.Driver driver = new com.mysql.jdbc.Driver();
-			// or£º
+			// orï¼š
 			// new com.mysql.jdbc.Driver();
 
-			// System.out.println("³É¹¦¼ÓÔØMySQLÇı¶¯³ÌĞò");
-			// Ò»¸öConnection´ú±íÒ»¸öÊı¾İ¿âÁ¬½Ó
+			// System.out.println("æˆåŠŸåŠ è½½MySQLé©±åŠ¨ç¨‹åº");
+			// ä¸€ä¸ªConnectionä»£è¡¨ä¸€ä¸ªæ•°æ®åº“è¿æ¥
 			conn = DriverManager.getConnection(url);
-			// StatementÀïÃæ´øÓĞºÜ¶à·½·¨£¬±ÈÈçexecuteUpdate¿ÉÒÔÊµÏÖ²åÈë£¬¸üĞÂºÍÉ¾³ıµÈ
+			// Statementé‡Œé¢å¸¦æœ‰å¾ˆå¤šæ–¹æ³•ï¼Œæ¯”å¦‚executeUpdateå¯ä»¥å®ç°æ’å…¥ï¼Œæ›´æ–°å’Œåˆ é™¤ç­‰
 			stmt = conn.createStatement();
 			// sql = "create table student(NO char(20),name varchar(20),primary
 			// key(NO))";
 			// int result = stmt.executeUpdate(sql);//
-			// executeUpdateÓï¾ä»á·µ»ØÒ»¸öÊÜÓ°ÏìµÄĞĞÊı£¬Èç¹û·µ»Ø-1¾ÍÃ»ÓĞ³É¹¦
+			// executeUpdateè¯­å¥ä¼šè¿”å›ä¸€ä¸ªå—å½±å“çš„è¡Œæ•°ï¼Œå¦‚æœè¿”å›-1å°±æ²¡æœ‰æˆåŠŸ
 			// if (result != -1) {
-			// System.out.println("´´½¨Êı¾İ±í³É¹¦");
+			// System.out.println("åˆ›å»ºæ•°æ®è¡¨æˆåŠŸ");
 			// sql = "insert into jchatuser(userNO,userPass)
 			// values('zinian','183367')";
 			// // result = stmt.executeUpdate(sql);
@@ -53,10 +53,10 @@ public class DButil {
 			// // result = stmt.executeUpdate(sql);
 			// stmt.executeUpdate(sql);
 //			sql = "select * from jchatuser";
-//			ResultSet rs = stmt.executeQuery(sql);// executeQuery»á·µ»Ø½á¹ûµÄ¼¯ºÏ£¬·ñÔò·µ»Ø¿ÕÖµ
+//			ResultSet rs = stmt.executeQuery(sql);// executeQueryä¼šè¿”å›ç»“æœçš„é›†åˆï¼Œå¦åˆ™è¿”å›ç©ºå€¼
 //			System.out.println("usr\tpass");
 //			while (rs.next()) {
-//				System.out.println(rs.getString(1) + "\t" + rs.getString(2));// ÈëÈç¹û·µ»ØµÄÊÇintÀàĞÍ¿ÉÒÔÓÃgetInt()
+//				System.out.println(rs.getString(1) + "\t" + rs.getString(2));// å…¥å¦‚æœè¿”å›çš„æ˜¯intç±»å‹å¯ä»¥ç”¨getInt()
 //			}
 			// String ch="\'";
 			// sql = "select * from jchatuser where userNo="+ch+"zinian"+ch;
@@ -64,11 +64,11 @@ public class DButil {
 			// while (rs.next()) {
 			// System.out
 			// .println(rs.getString(1) + "\t" + rs.getString(2));//
-			// ÈëÈç¹û·µ»ØµÄÊÇintÀàĞÍ¿ÉÒÔÓÃgetInt()
+			// å…¥å¦‚æœè¿”å›çš„æ˜¯intç±»å‹å¯ä»¥ç”¨getInt()
 			// }
 			// }
 		} catch (SQLException e) {
-			System.out.println("MySQL²Ù×÷´íÎó");
+			System.out.println("MySQLæ“ä½œé”™è¯¯");
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,9 +88,9 @@ public class DButil {
 			{
 				String localip=null;
 				 try {
-//					 System.out.println("±¾»úµÄIP = " + InetAddress.getLocalHost());
+//					 System.out.println("æœ¬æœºçš„IP = " + InetAddress.getLocalHost());
 					localip = InetAddress.getLocalHost().getHostAddress();
-//					System.out.println("±¾»úµÄIP = " + InetAddress.getLocalHost().getHostAddress());
+//					System.out.println("æœ¬æœºçš„IP = " + InetAddress.getLocalHost().getHostAddress());
 				} catch (UnknownHostException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -120,8 +120,8 @@ public class DButil {
 			ResultSet rs = this.stmt.executeQuery(sql);
 			if (!rs.wasNull() && rs.next()) {
 				flag = -1;
-				System.out.println("ÓÃ»§ÒÑ´æÔÚ");
-				// ÓÃ»§ÒÑ´æÔÚ
+				System.out.println("ç”¨æˆ·å·²å­˜åœ¨");
+				// ç”¨æˆ·å·²å­˜åœ¨
 
 			} else {
 				sql = "insert into jchatuser(userNO,userPass) values('" + name + "','" + pass + "')";
@@ -138,17 +138,17 @@ public class DButil {
 		Vector ul=new Vector(15,10);
 		sql = "select * from jchatuser";
 		try{
-			ResultSet rs = stmt.executeQuery(sql);// executeQuery»á·µ»Ø½á¹ûµÄ¼¯ºÏ£¬·ñÔò·µ»Ø¿ÕÖµ
+			ResultSet rs = stmt.executeQuery(sql);// executeQueryä¼šè¿”å›ç»“æœçš„é›†åˆï¼Œå¦åˆ™è¿”å›ç©ºå€¼
 	//		System.out.println("usr\tpass");
 			while (rs.next()) {
 				String userNo = rs.getString("userNo"),nick =rs.getString("nick"),loginip = rs.getString("loginip");
 				if(rs.getString("nick")==null)
 					nick=userNo;
 				ul.addElement(new Friend(userNo,nick,loginip));
-	//			System.out.println(rs.getString(1) + "\t" + rs.getString(2));// ÈëÈç¹û·µ»ØµÄÊÇintÀàĞÍ¿ÉÒÔÓÃgetInt()
+	//			System.out.println(rs.getString(1) + "\t" + rs.getString(2));// å…¥å¦‚æœè¿”å›çš„æ˜¯intç±»å‹å¯ä»¥ç”¨getInt()
 			}
 		} catch (SQLException e) {
-			System.out.println("MySQL²Ù×÷´íÎó");
+			System.out.println("MySQLæ“ä½œé”™è¯¯");
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -157,23 +157,23 @@ public class DButil {
 	}
 	
 }
-//ÓÃ»§ÁĞ±íÀà 
+//ç”¨æˆ·åˆ—è¡¨ç±» 
 //ALTER TABLE `jchatuser` 
-//ADD COLUMN `onlinstatu` int(32) NULL COMMENT 'ÔÚÏß×´Ì¬ 0 ²»ÔÚÏß 1 ÔÚÏß'
+//ADD COLUMN `onlinstatu` int(32) NULL COMMENT 'åœ¨çº¿çŠ¶æ€ 0 ä¸åœ¨çº¿ 1 åœ¨çº¿'
 //ALTER TABLE `jchatuser` 
-//MODIFY COLUMN `onlinstatu` int(32) NOT NULL DEFAULT 0 COMMENT 'ÔÚÏß×´Ì¬ 0 ²»ÔÚÏß 1 ÔÚÏß'
+//MODIFY COLUMN `onlinstatu` int(32) NOT NULL DEFAULT 0 COMMENT 'åœ¨çº¿çŠ¶æ€ 0 ä¸åœ¨çº¿ 1 åœ¨çº¿'
 //ALTER TABLE `jchatuser` 
-//MODIFY COLUMN `loginip` char(32) CHARACTER SET utf8 NULL COMMENT '×î½üµÇÂ¼ip'
+//MODIFY COLUMN `loginip` char(32) CHARACTER SET utf8 NULL COMMENT 'æœ€è¿‘ç™»å½•ip'
 //ALTER TABLE `jchatuser` 
 //MODIFY COLUMN `userNo` char(20) CHARACTER SET utf8 NOT NULL
 //ALTER TABLE `jchatuser` 
 //MODIFY COLUMN `userPass` char(20) CHARACTER SET utf8 NULL
 //ALTER TABLE `jchatuser` 
-//MODIFY COLUMN `onlinstatu` int(32) NULL DEFAULT 0 COMMENT 'ÔÚÏß×´Ì¬ 0 ²»ÔÚÏß 1 ÔÚÏß'
+//MODIFY COLUMN `onlinstatu` int(32) NULL DEFAULT 0 COMMENT 'åœ¨çº¿çŠ¶æ€ 0 ä¸åœ¨çº¿ 1 åœ¨çº¿'
 //ALTER TABLE `jchatuser` 
-//ADD COLUMN `nick` varchar(32) NULL COMMENT 'êÇ³Æ'
+//ADD COLUMN `nick` varchar(32) NULL COMMENT 'æ˜µç§°'
 //ALTER TABLE `jchatuser` 
 //ADD COLUMN `logintime` char(32) NULL
 //ALTER TABLE `jchatuser` 
-//MODIFY COLUMN `nick` char(32) CHARACTER SET utf8 NULL COMMENT 'êÇ³Æ'
+//MODIFY COLUMN `nick` char(32) CHARACTER SET utf8 NULL COMMENT 'æ˜µç§°'
 //update `jchatuser` set `loginip`='127.0.0.1',`onlinstatu`=1 where `userNo`='zinizn';
